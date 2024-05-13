@@ -8,6 +8,9 @@ import pyautogui as pag
 import pyscreenshot as ImageGrab
 import time
 import base64
+import cv2
+import matplotlib.pyplot as plt
+import platform
 
 class Boxhead:
     def __init__(self):
@@ -15,8 +18,24 @@ class Boxhead:
         self.driver = ''
         self.action = ''
 
-        self.left_top = (24, 100)
-        self.right_top = (738, 537)
+        if platform.system() == "Windows":
+            self.left_top = (24, 100)
+            self.right_bottom = (738, 537)
+            self.start = (350, 250)
+            self.single_play = (393, 354)
+            self.next_map = (646, 363)
+            self.start_game = (443, 359)
+            self.restart_game = (381, 484)
+        else:
+            print(1)
+            self.left_top = (80, 160)
+            self.right_bottom = (800, 700)
+            self.start = (380, 400)
+            self.single_play = (393, 400)
+            self.next_map = (692, 400)
+            self.start_game = (465, 370)
+            self.restart_game = (395, 505)
+            
     
     def remove_ad(self):
         try:
@@ -31,29 +50,41 @@ class Boxhead:
             pass
 
     def game_start(self):
-        pag.click(350, 250)
-        time.sleep(22)
+        pag.click(*self.start)
+        time.sleep(21)
         self.remove_ad()
-        pag.click(393, 354)
+        pag.click(*self.single_play)
         time.sleep(1)
 
         for _ in range(10):
             self.remove_ad()
-            pag.click(646, 363)
+            pag.click(*self.next_map)
             time.sleep(0.2)
 
-        pag.click(443, 359)
+        pag.click(*self.start_game)
 
     def game_restart(self):
         self.remove_ad()
-        pag.click(381, 484)
+        pag.click(*self.restart_game)
 
     def get_image(self):
+        i = 0
         while True:
-            time.sleep(0.05)
-            img = ImageGrab.grab(bbox=(*self.left_top, *self.right_top))
-            img.save("boxhead.png")
+            i += 1
+            time.sleep(2)
+            img = ImageGrab.grab(bbox=(*self.left_top, *self.right_bottom))
+            img.save("./boxhead-reinforcement-learning/images/{}.png".format(i))
         
+    def train_model(self):
+        sample = cv2.imread('boxhead-reinforcement-learning/image/game1.png')
+        sample = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
+        print(sample.shape)
+        pt1 = (332, 228)
+        pt2 = (363, 273)
+        cv2.rectangle(sample, pt1, pt2, color=(255,0,0), thickness=2)
+        plt.imshow(sample)
+        plt.show()
+
     def main(self):
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-automation'])
@@ -71,7 +102,7 @@ class Boxhead:
                 print(e)
                 pass
         
-        time.sleep(1)
+        time.sleep(2)
         while True:
             self.remove_ad()
             
@@ -86,3 +117,4 @@ class Boxhead:
 
 boxhead = Boxhead()
 boxhead.main()
+# boxhead.train_model()
