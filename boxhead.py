@@ -19,8 +19,9 @@ class Boxhead:
         self.action = ''
 
         if platform.system() == "Windows":
+            print('window')
             self.left_top = (24, 100)
-            self.right_bottom = (738, 537)
+            self.right_bottom = (738, 560)
             self.start = (350, 250)
             self.single_play = (393, 354)
             self.next_map = (646, 363)
